@@ -1,0 +1,57 @@
+<article class="post">
+  <header class="post-header">
+    {% if post.author.profile.avatar %}
+      <img class="avatar" src="{{ post.author.profile.avatar.url }}" alt="{{ post.author.username }}">
+    {% else %}
+      <div class="avatar placeholder">{{ post.author.username|first|upper }}</div>
+    {% endif %}
+    <div>
+      <strong>{{ post.author.username }}</strong>
+      <div class="muted">{{ post.created_at|date:"M d, Y H:i" }}</div>
+    </div>
+  </header>
+
+  <p class="post-content">{{ post.content|linebreaksbr }}</p>
+
+  {% if post.media.all %}
+    <div class="media-grid">
+      {% for item in post.media.all %}
+        {% if item.is_image %}
+          <img src="{{ item.file.url }}" alt="Post image">
+        {% elif item.is_video %}
+          <video src="{{ item.file.url }}" controls></video>
+        {% else %}
+          <a href="{{ item.file.url }}">Download attachment</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <footer class="post-actions">
+    <form method="post" action="{% url 'toggle_like' post.pk %}" class="inline-form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit">{% if post.is_liked %}Unlike{% else %}Like{% endif %} ({{ post.reactions.count }})</button>
+    </form>
+    <a class="button secondary" href="{% url 'post_detail' post.pk %}">Comments</a>
+    {% if post.author == user %}
+      <a class="button secondary" href="{% url 'post_edit' post.pk %}">Edit</a>
+      <form method="post" action="{% url 'post_delete' post.pk %}" class="inline-form">
+        {% csrf_token %}
+        <button type="submit" class="danger">Delete</button>
+      </form>
+    {% endif %}
+    {% if user.is_staff %}
+      <form method="post" action="{% url 'moderator_delete_post' post.pk %}" class="inline-form">
+        {% csrf_token %}
+        <button type="submit" class="danger">Moderator delete</button>
+      </form>
+    {% endif %}
+  </footer>
+
+  <section class="comments">
+    {% for comment in post.visible_comments|slice:":3" %}
+      {% include 'social/comment.html' with comment=comment post=post %}
+    {% endfor %}
+  </section>
+</article>

@@ -1,0 +1,43 @@
+{% extends 'social/base.html' %}
+{% block title %}Members{% endblock %}
+{% block content %}
+<section class="section-head">
+  <h1>Members</h1>
+  <a class="button secondary" href="{% url 'dashboard' %}">Back</a>
+</section>
+<section class="panel table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Joined</th>
+        <th>Posts</th>
+        <th>Comments</th>
+        <th>Violations</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for member in users %}
+        <tr>
+          <td>{{ member.username }}</td>
+          <td>{{ member.date_joined|date:"M d, Y" }}</td>
+          <td>{{ member.post_total }}</td>
+          <td>{{ member.comment_total }}</td>
+          <td>{{ member.profile.violation_count }}</td>
+          <td>{% if member.is_active %}Active{% else %}Banned{% endif %}</td>
+          <td>
+            <form method="post" action="{% url 'toggle_user_ban' member.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="{% if member.is_active %}danger{% endif %}">
+                {% if member.is_active %}Ban{% else %}Unban{% endif %}
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

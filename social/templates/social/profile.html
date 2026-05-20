@@ -1,0 +1,42 @@
+{% extends 'social/base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Profile</h1>
+  {% if user.profile.avatar %}
+    <div class="profile-preview">
+      <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }} avatar">
+    </div>
+  {% endif %}
+  <form method="post" enctype="multipart/form-data" class="form-stack">
+    {% csrf_token %}
+    <p>
+      <label for="{{ form.avatar.id_for_label }}">Avatar</label>
+      {{ form.avatar }}
+      {% if form.avatar.errors %}
+        <span class="field-error">{{ form.avatar.errors }}</span>
+      {% endif %}
+    </p>
+    <p>
+      <label for="{{ form.bio.id_for_label }}">Bio</label>
+      {{ form.bio }}
+      {% if form.bio.errors %}
+        <span class="field-error">{{ form.bio.errors }}</span>
+      {% endif %}
+    </p>
+    <button type="submit">Update profile</button>
+  </form>
+  <a href="{% url 'change_password' %}">Change password</a>
+</section>
+<section>
+  <h2>Your posts</h2>
+  {% for post in posts %}
+    <article class="post compact">
+      <p>{{ post.content|truncatewords:30 }}</p>
+      <a href="{% url 'post_detail' post.pk %}">Open</a>
+    </article>
+  {% empty %}
+    <p class="empty">You have not posted yet.</p>
+  {% endfor %}
+</section>
+{% endblock %}

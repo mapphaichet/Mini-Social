@@ -1,0 +1,33 @@
+{% extends 'social/base.html' %}
+{% block title %}Moderation queue{% endblock %}
+{% block content %}
+<section class="section-head">
+  <h1>Moderation queue</h1>
+  <a class="button secondary" href="{% url 'dashboard' %}">Back</a>
+</section>
+{% for comment in comments %}
+  <article class="post">
+    <header class="post-header">
+      <div>
+        <strong>{{ comment.author.username }}</strong>
+        <div class="muted">{{ comment.created_at|date:"M d, Y H:i" }} on post #{{ comment.post_id }}</div>
+      </div>
+    </header>
+    <p>{{ comment.content|linebreaksbr }}</p>
+    <p class="status">{{ comment.flagged_reason }}</p>
+    <footer class="post-actions">
+      <form method="post" action="{% url 'approve_comment' comment.pk %}" class="inline-form">
+        {% csrf_token %}
+        <button type="submit">Approve</button>
+      </form>
+      <form method="post" action="{% url 'reject_comment' comment.pk %}" class="inline-form">
+        {% csrf_token %}
+        <button type="submit" class="danger">Reject/Delete</button>
+      </form>
+      <a class="button secondary" href="{% url 'post_detail' comment.post_id %}">Open post</a>
+    </footer>
+  </article>
+{% empty %}
+  <p class="empty">No comments are waiting for moderation.</p>
+{% endfor %}
+{% endblock %}

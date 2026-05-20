@@ -1,0 +1,43 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Mini Social{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'social/styles.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'feed' %}">Mini Social</a>
+    <nav>
+      {% if user.is_authenticated %}
+        <a href="{% url 'feed' %}">Newsfeed</a>
+        <a href="{% url 'post_create' %}">New post</a>
+        <a href="{% url 'profile' %}">Profile</a>
+        {% if user.is_staff %}
+          <a href="{% url 'dashboard' %}">Dashboard</a>
+        {% endif %}
+        <form action="{% url 'logout' %}" method="post" class="inline-form">
+          {% csrf_token %}
+          <button type="submit" class="link-button">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="page">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

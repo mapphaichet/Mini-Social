@@ -1,0 +1,16 @@
+<div class="comment {% if not comment.is_approved %}dimmed{% endif %}">
+  <div>
+    <strong>{{ comment.author.username }}</strong>
+    <span class="muted">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+  </div>
+  {% if not comment.is_approved %}
+    <p class="status">Comment awaiting administrator approval due to suspected violation of community standards.</p>
+  {% endif %}
+  <p>{{ comment.content|linebreaksbr }}</p>
+  {% if comment.author == user or post.author == user or user.is_staff %}
+    <form method="post" action="{% url 'comment_delete' comment.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="link-button danger-text">Delete comment</button>
+    </form>
+  {% endif %}
+</div>

@@ -1,0 +1,13 @@
+{% extends 'social/base.html' %}
+{% block title %}Post{% endblock %}
+{% block content %}
+{% include 'social/post_card.html' with post=post %}
+<section class="panel">
+  <h2>Write a comment</h2>
+  <form method="post" action="{% url 'add_comment' post.pk %}" class="form-stack">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Comment</button>
+  </form>
+</section>
+{% endblock %}

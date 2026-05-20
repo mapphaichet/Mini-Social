@@ -1,0 +1,60 @@
+{% extends 'social/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="dashboard-head">
+  <div>
+    <h1>Moderator dashboard</h1>
+    <p class="muted">Content operations, member controls, and filter statistics.</p>
+  </div>
+  <nav class="dashboard-nav">
+    <a class="button" href="{% url 'moderation_queue' %}">Moderation queue</a>
+    <a class="button secondary" href="{% url 'member_list' %}">Members</a>
+  </nav>
+</section>
+
+<section class="stats-grid">
+  <div class="stat"><strong>{{ post_count }}</strong><span>Posts</span></div>
+  <div class="stat"><strong>{{ comment_count }}</strong><span>Comments</span></div>
+  <div class="stat"><strong>{{ user_count }}</strong><span>Users</span></div>
+  <div class="stat"><strong>{{ pending_count }}</strong><span>Pending moderation</span></div>
+</section>
+
+<section class="panel">
+  <h2>Filter index</h2>
+  <div class="bar">
+    <div class="bar-clean" style="--count: {{ clean_count }}; --total: {{ comment_count|default:1 }}"></div>
+    <div class="bar-toxic" style="--count: {{ toxic_count }}; --total: {{ comment_count|default:1 }}"></div>
+  </div>
+  <p>Clean comments: {{ clean_count }} | Toxic or pending comments: {{ toxic_count }}</p>
+</section>
+
+<section class="grid-two">
+  <div class="panel">
+    <h2>Last 7 days</h2>
+    <h3>Posts</h3>
+    {% for row in posts_by_day %}
+      <div class="metric-row"><span>{{ row.day }}</span><strong>{{ row.total }}</strong></div>
+    {% empty %}<p class="empty">No post activity.</p>{% endfor %}
+    <h3>Comments</h3>
+    {% for row in comments_by_day %}
+      <div class="metric-row"><span>{{ row.day }}</span><strong>{{ row.total }}</strong></div>
+    {% empty %}<p class="empty">No comment activity.</p>{% endfor %}
+    <h3>New users</h3>
+    {% for row in users_by_day %}
+      <div class="metric-row"><span>{{ row.day }}</span><strong>{{ row.total }}</strong></div>
+    {% empty %}<p class="empty">No new users.</p>{% endfor %}
+  </div>
+
+  <div class="panel">
+    <h2>Frequent violations</h2>
+    {% for profile in violators %}
+      <div class="metric-row">
+        <span>{{ profile.user.username }}</span>
+        <strong>{{ profile.violation_count }}</strong>
+      </div>
+    {% empty %}
+      <p class="empty">No violations recorded.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
